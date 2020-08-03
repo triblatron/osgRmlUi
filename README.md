@@ -1,7 +1,7 @@
 # osgRmlUi
 Integration of RmlUi with OpenSceneGraph
 
-This project is a resurrection of osgRocket to work with RmlUi-3.3 and OpenSceneGraph-3.6.5.
+This project is a resurrection of osgLibRocket to work with RmlUi-3.3 and OpenSceneGraph-3.6.5.
 
 It uses cmake to create the Makefiles or other build system.
 
@@ -13,7 +13,7 @@ The following dependencies are known to work:
   * RmlUi-3.3 - It is unknown whether earlier versions will work.  There is ongoing work to restructure the code for RmlUi which will have implications for osgRmlUi.
 
 To build the code on Linux:
-* git clone the repository.
+* git clone https://github.com/triblatron/osgRmlUi.git
 * mkdir osgRmlUi_build
 * cd osgRmlUi_build
 * cmake ../osgRmlUi
