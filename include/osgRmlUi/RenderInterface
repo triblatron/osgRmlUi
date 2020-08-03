@@ -1,0 +1,87 @@
+#pragma once
+
+/* osgRmlUi, an interface for OpenSceneGraph to use RmlUI
+*
+*  Permission is hereby granted, free of charge, to any person obtaining a copy
+*  of this software and associated documentation files (the "Software"), to deal
+*  in the Software without restriction, including without limitation the rights
+*  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+*  copies of the Software, and to permit persons to whom the Software is
+*  furnished to do so, subject to the following conditions:
+*
+*  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+*  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+*  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+*  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+*  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+*  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+*  THE SOFTWARE.
+*/
+//
+// This code is copyright (c) 2011 Martin Scheffler martin.scheffler@googlemail.com
+//
+
+#include <osgRmlUi/export.h>
+#include <RmlUi/Core/RenderInterface.h>
+#include <RmlUi/Core/Context.h>
+#include <RmlUi/Core.h>
+#include <RmlUi/Debugger/Debugger.h>
+#include <osg/Group>
+#include <osg/Scissor>
+#include <osg/Texture2D>
+#include <osg/Geometry>
+
+namespace osgRmlUi
+{
+    class OSGRMLUI_EXPORT RenderInterface : public Rml::Core::RenderInterface
+    {
+
+    public:
+
+        RenderInterface();
+
+        void setRenderTarget(osg::Group* grp, int w, int h, bool fullscreen);
+        osg::Group* getRenderTarget() const;
+
+        virtual void RenderGeometry(Rml::Core::Vertex* vertices, int num_vertices, int* indices, int num_indices, Rml::Core::TextureHandle texture, const Rml::Core::Vector2f& translation);
+
+        virtual Rml::Core::CompiledGeometryHandle CompileGeometry(Rml::Core::Vertex* vertices, int num_vertices, int* indices, int num_indices, Rml::Core::TextureHandle texture);
+
+        virtual void RenderCompiledGeometry(Rml::Core::CompiledGeometryHandle geometry, const Rml::Core::Vector2f& translation);
+
+        virtual void ReleaseCompiledGeometry(Rml::Core::CompiledGeometryHandle geometry);
+
+        virtual void EnableScissorRegion(bool enable);
+
+        virtual void SetScissorRegion(int x, int y, int width, int height);
+
+        void AddTexture(Rml::Core::TextureHandle& texture_handle, osg::Image* image);
+
+        virtual bool LoadTexture(Rml::Core::TextureHandle& texture_handle, Rml::Core::Vector2i& texture_dimensions, const Rml::Core::String& source);
+
+        virtual bool GenerateTexture(Rml::Core::TextureHandle& texture_handle, const Rml::Core::byte* source, const Rml::Core::Vector2i& source_dimensions);
+
+
+        virtual void ReleaseTexture(Rml::Core::TextureHandle texture);
+
+        virtual void Release();
+
+    private:
+
+        osg::Object* createGeometry(Rml::Core::Vertex* vertices, int num_vertices, int* indices, int num_indices, Rml::Core::TextureHandle texture, bool useDisplayList);
+
+        osg::Group* _renderTarget;
+        osg::StateSet* _renderTargetStateSet;
+
+        bool _scissorsEnabled;
+        osg::ref_ptr<osg::Scissor> _scissorTest;
+
+        typedef std::list<osg::ref_ptr<osg::Node> > InstantGeometryMap;
+        InstantGeometryMap _instantGeometryMap;
+
+        int _screenWidth;
+        int _screenHeight;
+      bool _fullScreen;
+      osg::ref_ptr<osg::Geode> _geode;
+    };
+}

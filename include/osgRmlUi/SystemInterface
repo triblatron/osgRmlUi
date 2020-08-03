@@ -1,0 +1,63 @@
+#pragma once
+
+#include <osgRmlUi/export.h>
+#include <RmlUi/Core.h>
+#include <osg/Notify>
+#include <osg/Timer>
+
+namespace osgRmlUi
+{
+   class OSGRMLUI_EXPORT SystemInterface : public Rml::Core::SystemInterface
+   {
+   public:
+
+      SystemInterface()
+         : _timer(osg::Timer::instance()->tick())
+      {
+
+      }
+
+      virtual double GetElapsedTime();
+
+       /// Translate the input string into the translated string.
+       /// @param[out] translated Translated string ready for display.
+       /// @param[in] input String as received from XML.
+       /// @return Number of translations that occured.
+       virtual int TranslateString(Rml::Core::String& translated, const Rml::Core::String& input)
+       {
+           translated = input;
+           return 0;
+       }
+
+       /// Log the specified message.
+       /// @param[in] type Type of log message, ERROR, WARNING, etc.
+       /// @param[in] message Message to log.
+       /// @return True to continue execution, false to break into the debugger.
+       virtual bool LogMessage(Rml::Core::Log::Type type, const Rml::Core::String& message)
+       {
+           const std::string & str = message;
+
+           switch(type)
+           {
+           case Rml::Core::Log::LT_ALWAYS  : OSG_ALWAYS << str << "\n"; break;
+           case Rml::Core::Log::LT_ERROR   : OSG_FATAL  << str << "\n"; break;
+           case Rml::Core::Log::LT_ASSERT  : OSG_FATAL  << str << "\n"; break;
+           case Rml::Core::Log::LT_WARNING : OSG_WARN   << str << "\n"; break;
+           case Rml::Core::Log::LT_INFO    : OSG_INFO   << str << "\n"; break;
+           case Rml::Core::Log::LT_DEBUG   : OSG_DEBUG  << str << "\n"; break;
+           case Rml::Core::Log::LT_MAX     : OSG_ALWAYS << str << "\n"; break;
+           }
+           return true;
+       }
+
+       /// Called when this system interface is no longer required.
+       virtual void Release()
+       {
+
+       }
+
+   private:
+      osg::Timer_t _timer;
+   };
+
+}

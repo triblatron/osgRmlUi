@@ -1,0 +1,123 @@
+#pragma once
+
+/* osgRmlUi, an interface for OpenSceneGraph to use RmlUI
+*
+*  Permission is hereby granted, free of charge, to any person obtaining a copy
+*  of this software and associated documentation files (the "Software"), to deal
+*  in the Software without restriction, including without limitation the rights
+*  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+*  copies of the Software, and to permit persons to whom the Software is
+*  furnished to do so, subject to the following conditions:
+*
+*  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+*  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+*  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+*  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+*  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+*  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+*  THE SOFTWARE.
+*/
+//
+// This code is copyright (c) 2011 Martin Scheffler martin.scheffler@googlemail.com
+//
+
+#include <osgRmlUi/export.h>
+#include <RmlUi/Core/Core.h>
+#include <RmlUi/Debugger/Debugger.h>
+#include <osgRmlUi/RenderInterface>
+#include <osg/Group>
+#include <osgViewer/View>
+
+namespace osgRmlUi
+{
+
+  class EventListener;
+
+
+  /**
+    A node for rendering a RmlUI GUI in OpenSceneGraph.
+    */
+  class OSGRMLUI_EXPORT GuiNode
+      : public osg::Group
+  {
+
+    typedef osg::Group BaseClass;
+
+  public:
+
+    /**
+     * @param contextname Unique string identifying the gui node context
+     * @param renderer Access to renderer interface singleton
+     * @param debug Set to true to add RmlUI debug gui
+     */
+    GuiNode(const std::string& contextname, bool debug = false);
+    ~GuiNode();
+
+    /**
+     * get RmlUI context of this gui
+     */
+    Rml::Core::Context* getContext() { return _context; }
+
+    /**
+     * traversal handler for injecting time into RmlUI
+     */
+    virtual void traverse(osg::NodeVisitor& nv);
+
+    /**
+     * handle osg events.
+     */
+    virtual bool handle(const osgGA::GUIEventAdapter& ea, const osg::NodePath& np, osgGA::GUIActionAdapter& aa);
+
+    /**
+      * transform osg key to RmlUI key
+      */
+    Rml::Core::Input::KeyIdentifier GetKeyCode(int osgkey);
+
+    /**
+      * transform key modifiers from osg to RmlUI
+      */
+    int GetKeyModifiers(int osgModKeyMask);
+
+    /**
+      * transform from osg button to RmlUI button
+      */
+    int GetButtonId(int button);
+
+    /**
+      * Set this if RmlUI gui should render to a fullscreen camera.
+      */
+    void setCamera(osg::Camera* cam);
+
+    osgGA::GUIEventHandler* GetGUIEventHandler() const { return mGUIEventHandler.get(); }
+
+  private:
+
+    /**
+      * update view matrix and resize RmlUI screen dimensions
+      */
+    void setScreenSize(int w, int h);
+
+    /**
+      * Transform osg mouse position into RmlUI screen coordinates
+      */
+    void mousePosition(osgViewer::View* view, const osgGA::GUIEventAdapter& ea, const osg::NodePath& nodePath, int& x, int &y);
+
+    // number of last frame so we don't update multiple times per frame
+    unsigned int _previousTraversalNumber;
+
+    // osgRmlUi render interface singleton
+    RenderInterface* _renderer;
+
+    // context of this gui (one per gui)
+    Rml::Core::Context * _context;
+
+    EventListener* _contextEventListener;
+
+    // camera to render to (can be NULL)
+    osg::ref_ptr<osg::Camera> _camera;
+
+    osg::ref_ptr<osgGA::GUIEventHandler> mGUIEventHandler;
+
+
+  };
+}
