@@ -20,4 +20,4 @@ To build the code on Linux:
 * ccmake or cmake-gui and edit the include paths and libraries for OpenSceneGraph and OpenThreads.
 * configure
 * generate
-make
+* make
